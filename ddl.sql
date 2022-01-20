@@ -18,11 +18,23 @@ CREATE TABLE `taktuku-project`.`users` (
   PRIMARY KEY(`id`)
 );
 
+-- create table category_product
+DROP TABLE IF EXISTS `taktuku-project`.`category_product`;
+CREATE TABLE `taktuku-project`.`category_product` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `description` varchar(255) NOT NULL,
+  `created_date` datetime DEFAULT NULL,
+  `updated_date` datetime DEFAULT NULL,
+  `deleted_date` datetime DEFAULT NULL,
+  PRIMARY KEY(`id`)
+);
+
 -- create table products
 DROP TABLE IF EXISTS `taktuku-project`.`products`;
 CREATE TABLE `taktuku-project`.`products` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `id_user` int(11) NOT NULL,
+  `id_category` int(11) NOT NULL,
   `name` varchar(255) NOT NULL,
   `description` text,
   `price` numeric NOT NULL,
@@ -32,7 +44,8 @@ CREATE TABLE `taktuku-project`.`products` (
   `updated_date` datetime DEFAULT NULL,
   `deleted_date` datetime DEFAULT NULL,
   PRIMARY KEY(`id`),
-  FOREIGN KEY (`id_user`) REFERENCES users(`id`)
+  FOREIGN KEY (`id_user`) REFERENCES users(`id`),
+  FOREIGN KEY (`id_category`) REFERENCES category_product(`id`)
 );
 
 -- create table cart_items
