@@ -11,7 +11,7 @@ type ServiceUser interface {
 	ServiceUserLogin(input helper.RequestUserLogin) (entities.User, error)
 	ServiceUsersGet() ([]entities.User, error)
 	ServiceUserGet(id int) (entities.User, error)
-	ServiceUserCreate(input helper.RequestUserCreate) (entities.User, error)
+	ServiceUserCreate(input helper.RequestUserCreate) (helper.RequestUserCreate, error)
 	ServiceUserUpdate(id int, input helper.RequestUserUpdate) (entities.User, error)
 	ServiceUserDelete(id int) (entities.User, error)
 }
@@ -34,7 +34,14 @@ func (su *serviceUser) ServiceUserLogin(input helper.RequestUserLogin) (entities
 		return user, err
 	}
 
-	user.Password = password
+	match, err := helper.CheckPasswordHash(password, user.Password)
+	if err != nil {
+		return user, err
+	}
+
+	if !match {
+		return user, fmt.Errorf("Email atau Password Anda Salah!")
+	}
 
 	return user, nil
 }
@@ -55,19 +62,11 @@ func (s *serviceUser) ServiceUserGet(id int) (entities.User, error) {
 	return user, nil
 }
 
-func (s *serviceUser) ServiceUserCreate(input helper.RequestUserCreate) (entities.User, error) {
-	user := entities.User{}
-	user.Name = input.Name
-	user.Email = input.Email
-	user.Password = input.Password
-	// if err != nil {
-	// 	return user, err
-	// }
-	// user.CreatedAt = time.Now()
-	// user.UpdatedAt = time.Now()
-	fmt.Println(user)
-	createUser, err := s.repository1.CreateUser(user)
+func (s *serviceUser) ServiceUserCreate(input helper.RequestUserCreate) (helper.RequestUserCreate, error) {
+	var err error
+	createUser, err := s.repository1.CreateUser(input)
 	if err != nil {
+		fmt.Println(err)
 		return createUser, err
 	}
 	return createUser, nil
