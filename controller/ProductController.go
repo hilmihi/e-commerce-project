@@ -23,18 +23,12 @@ func NewProductController(ProductService service.ServiceProduct) *ProductHF {
 func (u *ProductHF) GetProductsController(c echo.Context) error {
 	Products, err := u.ProductService.ServiceProductsGet()
 	if err != nil {
-		response := helper.ResponsesFormat("Failed to fetch Product data", http.StatusOK, nil)
+		fmt.Println(err)
+		response := helper.ResponsesFormat("Failed to fetch Product data", http.StatusOK, err)
 		return c.JSON(http.StatusOK, response)
 	}
-	var data []helper.ProductFormatter
-	for i := 0; i < len(Products); i++ {
-		formatter := helper.FormatProduct(Products[i])
-		data = append(data, formatter)
-	}
 
-	response := helper.ResponsesFormat("Success to fetch Product data", http.StatusOK, data)
-
-	return c.JSON(http.StatusOK, response)
+	return c.JSON(http.StatusOK, Products)
 }
 
 //Product get by id
@@ -47,13 +41,12 @@ func (u *ProductHF) GetProductController(c echo.Context) error {
 
 	Product, err := u.ProductService.ServiceProductGet(ProductId)
 	if err != nil {
+		fmt.Println(err)
 		errResp := helper.ResponsesFormat("Failed to get Product by id", http.StatusBadRequest, nil)
 		return c.JSON(http.StatusBadRequest, errResp)
 	}
 
-	formatter := helper.FormatProduct(Product)
-	resp := helper.ResponsesFormat("Success to get Product by id", http.StatusOK, formatter)
-	return c.JSON(http.StatusOK, resp)
+	return c.JSON(http.StatusOK, Product)
 }
 
 // Product update
@@ -65,7 +58,7 @@ func (u *ProductHF) UpdateProductController(c echo.Context) error {
 
 	}
 
-	var updateInput helper.RequestProductUpdate
+	var updateInput entities.Product
 	if err := c.Bind(&updateInput); err != nil {
 		fmt.Println("bind", err)
 		errResp := helper.ResponsesFormat("Failed to update data", http.StatusBadRequest, nil)
@@ -74,7 +67,7 @@ func (u *ProductHF) UpdateProductController(c echo.Context) error {
 	}
 
 	userID := c.Get("currentUser").(entities.User)
-	updateInput.UserID = userID
+	updateInput.Id_user = userID.Id
 
 	update, err := u.ProductService.ServiceProductUpdate(ProductId, updateInput)
 	if err != nil {
@@ -84,8 +77,7 @@ func (u *ProductHF) UpdateProductController(c echo.Context) error {
 
 	}
 
-	formatter := helper.FormatProduct(update)
-	resp := helper.ResponsesFormat("Success to update Product data", http.StatusOK, formatter)
+	resp := helper.ResponsesFormat("Successful Operation", http.StatusOK, update)
 	return c.JSON(http.StatusOK, resp)
 
 }
@@ -93,7 +85,7 @@ func (u *ProductHF) UpdateProductController(c echo.Context) error {
 //create Product
 
 func (u *ProductHF) CreateProductController(c echo.Context) error {
-	var createInput helper.RequestProductCreate
+	var createInput entities.Product
 	if err := c.Bind(&createInput); err != nil {
 		fmt.Println("CI", err)
 		errResp := helper.ResponsesFormat("Failed to Create Product", http.StatusBadRequest, nil)
@@ -101,7 +93,7 @@ func (u *ProductHF) CreateProductController(c echo.Context) error {
 	}
 
 	userID := c.Get("currentUser").(entities.User)
-	createInput.UserID = userID
+	createInput.Id_user = userID.Id
 	createdProduct, err := u.ProductService.ServiceProductCreate(createInput)
 	if err != nil {
 		fmt.Println("create", err)
@@ -109,8 +101,7 @@ func (u *ProductHF) CreateProductController(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, errResp)
 	}
 
-	formatter := helper.FormatProduct(createdProduct)
-	resp := helper.ResponsesFormat("Success create Product", http.StatusOK, formatter)
+	resp := helper.ResponsesFormat("Successful Operation", http.StatusOK, createdProduct)
 	return c.JSON(http.StatusOK, resp)
 
 }
@@ -125,6 +116,7 @@ func (u *ProductHF) DeleteProductController(c echo.Context) error {
 	}
 
 	userID := c.Get("currentUser").(entities.User)
+
 	deleteProduct, err := u.ProductService.ServiceProductDelete(ProductId, userID.Id)
 	// fmt.Printf("PI %d = UI %d", ProductId, userID.Id)
 	if err != nil {
@@ -133,7 +125,6 @@ func (u *ProductHF) DeleteProductController(c echo.Context) error {
 		return c.JSON(http.StatusUnauthorized, errResp)
 	}
 
-	formatter := helper.FormatProduct(deleteProduct)
-	resp := helper.ResponsesFormat("Success delete Product", http.StatusOK, formatter)
+	resp := helper.ResponsesFormat("Successful Operation", http.StatusOK, deleteProduct)
 	return c.JSON(http.StatusOK, resp)
 }

@@ -29,22 +29,3 @@ func FormatUser(user entities.User) UserFormatter {
 	}
 	return formatter
 }
-
-type ProductFormatter struct {
-	ID          int     `json:"id"`
-	UserID      int     `json:"user_id"`
-	Name        string  `json:"name"`
-	Description string  `json:"description"`
-	Price       float64 `json:"price"`
-}
-
-func FormatProduct(product entities.Product) ProductFormatter {
-	formatter := ProductFormatter{
-		ID:          product.Id,
-		UserID:      product.UserID.Id,
-		Name:        product.Name,
-		Description: product.Description,
-		Price:       product.Price,
-	}
-	return formatter
-}

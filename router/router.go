@@ -15,7 +15,10 @@ import (
 func InitRoute(db *sql.DB) *echo.Echo {
 	//new echo
 	e := echo.New()
-	e.Pre(middleware.RemoveTrailingSlash(), middleware.Logger())
+	//setting cors
+	e.Use(middleware.CORSWithConfig(middleware.DefaultCORSConfig))
+
+	// e.Pre(middleware.RemoveTrailingSlash(), middleware.Logger())
 	authService := addmiddleware.AuthService()
 
 	//User
