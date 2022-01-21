@@ -61,7 +61,7 @@ func (r *Repository_Cart) GetCart(id int) (entities.Cart, error) {
 
 //create Cart
 func (r *Repository_Cart) CreateCart(Cart entities.Cart) (entities.Cart, error) {
-	query := `INSERT INTO cart_items (id_user, id_product, quantity, sub_total, created_date, deleted_date) VALUES (?, ?, ?, ?, now(), now())`
+	query := `INSERT INTO cart_items (id_user, id_product, quantity, sub_total, created_date, updated_date) VALUES (?, ?, ?, ?, now(), now())`
 
 	statement, err := r.db.Prepare(query)
 	if err != nil {
