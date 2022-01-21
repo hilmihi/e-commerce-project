@@ -22,6 +22,7 @@ func AuthService() *jwtService {
 
 func (s *jwtService) GenerateToken(userId int) (string, error) {
 	claims := jwt.MapClaims{}
+	claims["authorized"] = true
 	claims["id"] = userId
 	claims["exp"] = time.Now().Add(time.Hour * 1).Unix() //Token expires after 1 hour
 

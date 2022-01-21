@@ -2,7 +2,7 @@ package repository
 
 import (
 	"database/sql"
-	"log"
+	"fmt"
 	"sirclo/api/entities"
 )
 
@@ -10,7 +10,7 @@ type RepositoryProduct interface {
 	GetProducts() ([]entities.Product, error)
 	CreateProduct(Product entities.Product) (entities.Product, error)
 	GetProduct(id int) (entities.Product, error)
-	UpdateProduct(Product entities.Product) (entities.Product, error)
+	UpdateProduct(Id_product int, Product entities.Product) (entities.Product, error)
 	DeleteProduct(Product entities.Product) (entities.Product, error)
 }
 
@@ -25,9 +25,9 @@ func NewRepositoryProduct(db *sql.DB) *Repository_Product {
 //get Products
 func (r *Repository_Product) GetProducts() ([]entities.Product, error) {
 	var Products []entities.Product
-	results, err := r.db.Query("select * from Products")
+	results, err := r.db.Query("select id, id_user, id_category, name, description, price, quantity, photo from products where deleted_date IS NULL")
 	if err != nil {
-		log.Fatalf("Error")
+		return nil, err
 	}
 
 	defer results.Close()
@@ -35,9 +35,9 @@ func (r *Repository_Product) GetProducts() ([]entities.Product, error) {
 	for results.Next() {
 		var Product entities.Product
 
-		err = results.Scan(&Product.Id, &Product.UserID.Id, &Product.Name, &Product.Description, &Product.Price)
+		err = results.Scan(&Product.Id, &Product.Id_user, &Product.Id_category, &Product.Name, &Product.Description, &Product.Price, &Product.Quantity, &Product.Photo)
 		if err != nil {
-			log.Fatalf("Error")
+			return nil, err
 		}
 
 		Products = append(Products, Product)
@@ -49,9 +49,9 @@ func (r *Repository_Product) GetProducts() ([]entities.Product, error) {
 func (r *Repository_Product) GetProduct(id int) (entities.Product, error) {
 	var Product entities.Product
 
-	row := r.db.QueryRow(`SELECT * FROM Products WHERE id = ?`, id)
+	row := r.db.QueryRow(`SELECT id, id_user, id_category, name, description, price, quantity, photo FROM products WHERE id = ? AND deleted_date IS NULL `, id)
 
-	err := row.Scan(&Product.Id, &Product.UserID.Id, &Product.Name, &Product.Description, &Product.Price)
+	err := row.Scan(&Product.Id, &Product.Id_user, &Product.Id_category, &Product.Name, &Product.Description, &Product.Price, &Product.Quantity, &Product.Photo)
 	if err != nil {
 		return Product, err
 	}
@@ -61,7 +61,7 @@ func (r *Repository_Product) GetProduct(id int) (entities.Product, error) {
 
 //create Product
 func (r *Repository_Product) CreateProduct(Product entities.Product) (entities.Product, error) {
-	query := `INSERT INTO products (userID, productName, ProductDescription, Price) VALUES (?, ?, ?, ?)`
+	query := `INSERT INTO products (id_user, id_category, name, description, price, quantity, photo, created_date, deleted_date) VALUES (?, ?, ?, ?, ?, ?, ?, now(), now())`
 
 	statement, err := r.db.Prepare(query)
 	if err != nil {
@@ -70,7 +70,7 @@ func (r *Repository_Product) CreateProduct(Product entities.Product) (entities.P
 
 	defer statement.Close()
 
-	_, err = statement.Exec(Product.UserID.Id, Product.Name, Product.Description, Product.Price)
+	_, err = statement.Exec(Product.Id_user, Product.Id_category, Product.Name, Product.Description, Product.Price, Product.Quantity, Product.Photo)
 	if err != nil {
 		return Product, err
 	}
@@ -79,8 +79,10 @@ func (r *Repository_Product) CreateProduct(Product entities.Product) (entities.P
 }
 
 //update Product
-func (r *Repository_Product) UpdateProduct(Product entities.Product) (entities.Product, error) {
-	query := `UPDATE Products SET ProductName = ?, ProductDescription = ?, Price = ? WHERE id = ?`
+func (r *Repository_Product) UpdateProduct(Id_product int, Product entities.Product) (entities.Product, error) {
+	fmt.Println(Id_product)
+	fmt.Println(Product)
+	query := `UPDATE products SET name = ?, description = ?, price = ?, quantity = ?, photo = ?, updated_date = now() WHERE id = ? AND id_user = ?`
 
 	statement, err := r.db.Prepare(query)
 	if err != nil {
@@ -89,7 +91,7 @@ func (r *Repository_Product) UpdateProduct(Product entities.Product) (entities.P
 
 	defer statement.Close()
 
-	_, err = statement.Exec(Product.Name, Product.Description, Product.Price, Product.Id)
+	_, err = statement.Exec(Product.Name, Product.Description, Product.Price, Product.Quantity, Product.Photo, Id_product, Product.Id_user)
 	if err != nil {
 		return Product, err
 	}
@@ -99,7 +101,7 @@ func (r *Repository_Product) UpdateProduct(Product entities.Product) (entities.P
 
 //delete Product
 func (r *Repository_Product) DeleteProduct(Product entities.Product) (entities.Product, error) {
-	query := `DELETE FROM Products WHERE id = ?`
+	query := `UPDATE products SET deleted_date = now() WHERE id = ?`
 
 	statement, err := r.db.Prepare(query)
 	if err != nil {
