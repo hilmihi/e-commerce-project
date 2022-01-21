@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"sirclo/api/config"
 	"sirclo/api/router"
@@ -8,7 +9,7 @@ import (
 
 func main() {
 	connectionString := os.Getenv("DB_CONNECTION_STRING")
-
+	fmt.Println(connectionString)
 	db, err := config.InitDB(connectionString)
 	if err != nil {
 		panic(err)

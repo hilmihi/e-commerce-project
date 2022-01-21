@@ -129,8 +129,7 @@ func (u *UserHF) CreateUserController(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, errResp)
 	}
 
-	formatter := helper.FormatUser(createdUser)
-	resp := helper.ResponsesFormat("Success create User", http.StatusOK, formatter)
+	resp := helper.ResponsesFormat("Success create User", http.StatusOK, createdUser)
 	return c.JSON(http.StatusOK, resp)
 
 }
