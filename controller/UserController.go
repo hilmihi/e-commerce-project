@@ -57,15 +57,8 @@ func (u *UserHF) GetUsersController(c echo.Context) error {
 		response := helper.ResponsesFormat("Failed to get user data ", http.StatusOK, nil)
 		return c.JSON(http.StatusOK, response)
 	}
-	var data []helper.UserFormatter
-	for i := 0; i < len(users); i++ {
-		formatter := helper.FormatUser(users[i])
-		data = append(data, formatter)
-	}
 
-	response := helper.ResponsesFormat("Success fetch user data", http.StatusOK, data)
-
-	return c.JSON(http.StatusOK, response)
+	return c.JSON(http.StatusOK, users)
 }
 
 //user get by id
@@ -78,12 +71,12 @@ func (u *UserHF) GetUserController(c echo.Context) error {
 
 	user, err := u.userService.ServiceUserGet(userId)
 	if err != nil {
+		fmt.Println(err)
 		errResp := helper.ResponsesFormat("Failed to get user by id", http.StatusBadRequest, nil)
 		return c.JSON(http.StatusBadRequest, errResp)
 	}
-	formatter := helper.FormatUser(user)
-	resp := helper.ResponsesFormat("Success to get user by id", http.StatusOK, formatter)
-	return c.JSON(http.StatusOK, resp)
+
+	return c.JSON(http.StatusOK, user)
 }
 
 // user update
@@ -95,7 +88,7 @@ func (u *UserHF) UpdateUserController(c echo.Context) error {
 
 	}
 
-	var updateInput helper.RequestUserUpdate
+	var updateInput entities.User
 	if err := c.Bind(&updateInput); err != nil {
 		errResp := helper.ResponsesFormat("Failed to update data", http.StatusBadRequest, nil)
 		return c.JSON(http.StatusBadRequest, errResp)
