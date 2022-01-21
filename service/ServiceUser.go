@@ -11,7 +11,7 @@ type ServiceUser interface {
 	ServiceUserLogin(input helper.RequestUserLogin) (entities.User, error)
 	ServiceUsersGet() ([]entities.User, error)
 	ServiceUserGet(id int) (entities.User, error)
-	ServiceUserCreate(input helper.RequestUserCreate) (helper.RequestUserCreate, error)
+	ServiceUserCreate(input entities.User) (entities.User, error)
 	ServiceUserUpdate(id int, input helper.RequestUserUpdate) (entities.User, error)
 	ServiceUserDelete(id int) (entities.User, error)
 }
@@ -62,13 +62,21 @@ func (s *serviceUser) ServiceUserGet(id int) (entities.User, error) {
 	return user, nil
 }
 
-func (s *serviceUser) ServiceUserCreate(input helper.RequestUserCreate) (helper.RequestUserCreate, error) {
+func (s *serviceUser) ServiceUserCreate(input entities.User) (entities.User, error) {
 	var err error
+	input.Password, err = helper.HashPassword(input.Password)
+
+	if err != nil {
+		fmt.Println(err)
+		return input, err
+	}
+
 	createUser, err := s.repository1.CreateUser(input)
 	if err != nil {
 		fmt.Println(err)
 		return createUser, err
 	}
+
 	return createUser, nil
 }
 

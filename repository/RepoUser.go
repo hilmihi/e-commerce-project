@@ -4,13 +4,12 @@ import (
 	"database/sql"
 	"log"
 	"sirclo/api/entities"
-	"sirclo/api/helper"
 )
 
 type RepositoryUser interface {
 	FindByEmail(email string) (entities.User, error)
 	GetUsers() ([]entities.User, error)
-	CreateUser(user helper.RequestUserCreate) (helper.RequestUserCreate, error)
+	CreateUser(user entities.User) (entities.User, error)
 	GetUser(id int) (entities.User, error)
 	UpdateUser(user entities.User) (entities.User, error)
 	DeleteUser(user entities.User) (entities.User, error)
@@ -74,7 +73,7 @@ func (r *Repository_User) GetUser(id int) (entities.User, error) {
 }
 
 //create user
-func (r *Repository_User) CreateUser(user helper.RequestUserCreate) (helper.RequestUserCreate, error) {
+func (r *Repository_User) CreateUser(user entities.User) (entities.User, error) {
 	query := `INSERT INTO users (name, email, password, birth_date, phone_number, photo, gender_char, address, created_date, updated_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, now(), now())`
 
 	statement, err := r.db.Prepare(query)

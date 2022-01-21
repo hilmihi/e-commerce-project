@@ -8,18 +8,23 @@ type Desired_Output struct {
 }
 
 type Response struct {
-	DO   Desired_Output `json: "desired_output"`
-	Data interface{}    `json: "data"`
+	Code    int         `json: "code"`
+	Message string      `json: "message"`
+	Data    interface{} `json: "data"`
+}
+
+func ResponsesAuth(message string, code int, data interface{}) Response {
+	jsonResponse := Response{
+		Code: code,
+		Data: data,
+	}
+	return jsonResponse
 }
 
 func ResponsesFormat(message string, code int, data interface{}) Response {
-	do := Desired_Output{
-		Message: message,
-		Code:    code,
-	}
 	jsonResponse := Response{
-		DO:   do,
-		Data: data,
+		Code:    code,
+		Message: message,
 	}
 	return jsonResponse
 }

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	addmiddleware "sirclo/api/addMiddleware"
+	"sirclo/api/entities"
 	"sirclo/api/helper"
 	"sirclo/api/service"
 	"strconv"
@@ -45,7 +46,7 @@ func (h *UserHF) AuthUserController(c echo.Context) error {
 	}
 
 	formatter := helper.FormatAuth(loginUser, token)
-	response := helper.ResponsesFormat("Success to Login as User", http.StatusOK, formatter)
+	response := helper.ResponsesAuth("Success to Login as User", http.StatusOK, formatter)
 	return c.JSON(http.StatusOK, response)
 }
 
@@ -117,7 +118,7 @@ func (u *UserHF) UpdateUserController(c echo.Context) error {
 //create user
 
 func (u *UserHF) CreateUserController(c echo.Context) error {
-	var createInput helper.RequestUserCreate
+	var createInput entities.User
 	if err := c.Bind(&createInput); err != nil {
 		errResp := helper.ResponsesFormat("Failed to Create user", http.StatusBadRequest, nil)
 		return c.JSON(http.StatusBadRequest, errResp)
@@ -129,7 +130,7 @@ func (u *UserHF) CreateUserController(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, errResp)
 	}
 
-	resp := helper.ResponsesFormat("Success create User", http.StatusOK, createdUser)
+	resp := helper.ResponsesFormat("Successful Operation", http.StatusOK, createdUser)
 	return c.JSON(http.StatusOK, resp)
 
 }
