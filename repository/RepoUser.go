@@ -76,7 +76,7 @@ func (r *Repository_User) GetUser(id int) (entities.User, error) {
 
 //create user
 func (r *Repository_User) CreateUser(user entities.User) (entities.User, error) {
-	query := `INSERT INTO users (name, email, password, birth_date, phone_number, photo, gender_char, address, created_date, updated_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, now(), now())`
+	query := `INSERT INTO users (name, email, password, birth_date, phone_number, photo, gender, address, created_date, updated_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, now(), now())`
 
 	statement, err := r.db.Prepare(query)
 	if err != nil {
