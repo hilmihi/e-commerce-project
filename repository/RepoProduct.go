@@ -61,7 +61,7 @@ func (r *Repository_Product) GetProduct(id int) (entities.Product, error) {
 
 //create Product
 func (r *Repository_Product) CreateProduct(Product entities.Product) (entities.Product, error) {
-	query := `INSERT INTO products (id_user, id_category, name, description, price, quantity, photo, created_date, deleted_date) VALUES (?, ?, ?, ?, ?, ?, ?, now(), now())`
+	query := `INSERT INTO products (id_user, id_category, name, description, price, quantity, photo, created_date, updated_date) VALUES (?, ?, ?, ?, ?, ?, ?, now(), now())`
 
 	statement, err := r.db.Prepare(query)
 	if err != nil {
