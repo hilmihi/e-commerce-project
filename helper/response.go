@@ -21,6 +21,14 @@ type UserFormatter struct {
 	Email string `json:"email"`
 }
 
+type ResponseGetOrder struct {
+	Id_user int `json:"user_id"`
+	entities.TransactionDetail
+	Date    string           `json:"date" form:"date"`
+	Product entities.Product `json:"product" form:"product"`
+	Status  string           `json:"status" form:"status"`
+}
+
 func FormatUser(user entities.User) UserFormatter {
 	formatter := UserFormatter{
 		ID:    user.Id,

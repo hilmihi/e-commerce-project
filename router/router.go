@@ -55,5 +55,14 @@ func InitRoute(db *sql.DB) *echo.Echo {
 	e.PUT("carts/:id", addmiddleware.AuthMiddleware(authService, UserService, CartController.UpdateCartController))
 	e.DELETE("carts/:id", addmiddleware.AuthMiddleware(authService, UserService, CartController.DeleteCartController))
 
+	//Order
+	OrderRepository := repository.NewRepositoryOrder(db)
+	OrderService := service.NewOrderService(OrderRepository)
+	OrderController := controller.NewOrderController(OrderService)
+
+	e.POST("order/cart", addmiddleware.AuthMiddleware(authService, UserService, OrderController.CreateOrderCartController))
+	e.POST("order/product", addmiddleware.AuthMiddleware(authService, UserService, OrderController.CreateOrderProductController))
+	e.GET("order", addmiddleware.AuthMiddleware(authService, UserService, OrderController.GetOrdersController))
+
 	return e
 }
