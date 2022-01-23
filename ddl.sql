@@ -102,7 +102,7 @@ DROP TABLE IF EXISTS `taktuku-project`.`address`;
 CREATE TABLE `taktuku-project`.`address` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `id_transaction` int(11) NOT NULL,
-  `country` varchar(255) NOT NULL,
+  `state` varchar(255) NOT NULL,
   `street` varchar(20) NOT NULL,
   `zip` int(20) NOT NULL,
   `created_date` datetime DEFAULT NULL,
