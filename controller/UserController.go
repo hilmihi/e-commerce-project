@@ -28,7 +28,6 @@ func (h *UserHF) AuthUserController(c echo.Context) error {
 		fmt.Println("bind: ", err)
 		return c.JSON(http.StatusUnprocessableEntity, response)
 	}
-	fmt.Println("bind: ", input)
 
 	loginUser, err := h.userService.ServiceUserLogin(input)
 	if err != nil {
@@ -36,7 +35,6 @@ func (h *UserHF) AuthUserController(c echo.Context) error {
 		fmt.Println("login: ", err)
 		return c.JSON(http.StatusBadRequest, response)
 	}
-	fmt.Println(loginUser.Id)
 
 	token, err := h.authService.GenerateToken(loginUser.Id)
 	if err != nil {
@@ -70,6 +68,19 @@ func (u *UserHF) GetUserController(c echo.Context) error {
 	}
 
 	user, err := u.userService.ServiceUserGet(userId)
+	if err != nil {
+		fmt.Println(err)
+		errResp := helper.ResponsesFormat("Failed to get user by id", http.StatusBadRequest, nil)
+		return c.JSON(http.StatusBadRequest, errResp)
+	}
+
+	return c.JSON(http.StatusOK, user)
+}
+
+//user get by id
+func (u *UserHF) GetMyUserController(c echo.Context) error {
+	userID := c.Get("currentUser").(entities.User)
+	user, err := u.userService.ServiceUserGet(userID.Id)
 	if err != nil {
 		fmt.Println(err)
 		errResp := helper.ResponsesFormat("Failed to get user by id", http.StatusBadRequest, nil)

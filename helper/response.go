@@ -22,13 +22,13 @@ type UserFormatter struct {
 }
 
 type ResponseGetOrder struct {
-	Id        int             `json:"id" form:"id"`
-	Id_user   int             `json:"user_id"`
-	Quantity  int             `json:"quantity" form:"quantity"`
-	Sub_total float64         `json:"sub_total" form:"sub_total"`
-	Date      string          `json:"date" form:"date"`
-	Product   ResponseProduct `json:"product" form:"product"`
-	Status    string          `json:"status" form:"status"`
+	Id        int              `json:"id" form:"id"`
+	Id_user   int              `json:"user_id"`
+	Quantity  int              `json:"quantity" form:"quantity"`
+	Sub_total float64          `json:"sub_total" form:"sub_total"`
+	Date      string           `json:"date" form:"date"`
+	Product   entities.Product `json:"product" form:"product"`
+	Status    string           `json:"status" form:"status"`
 }
 
 type ResponseGetOrderByID struct {
