@@ -50,6 +50,7 @@ func (r *Repository_Order) GetOrders(id_user int) ([]helper.ResponseGetOrder, er
 		err = results.Scan(&Order.Id, &Order.Date, &Order.Quantity, &Order.Sub_total, &Order.Id_user, &Order.Product.Id,
 			&Order.Product.Name, &Order.Product.Price, &Order.Product.Description, &Order.Product.Photo,
 			&Order.Status, &Order.Product.Id_user, &Order.Product.Id_category)
+
 		if err != nil {
 			return nil, err
 		}
