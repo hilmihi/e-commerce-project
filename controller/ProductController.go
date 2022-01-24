@@ -31,6 +31,18 @@ func (u *ProductHF) GetProductsController(c echo.Context) error {
 	return c.JSON(http.StatusOK, Products)
 }
 
+func (u *ProductHF) GetProductsSellerController(c echo.Context) error {
+	userID := c.Get("currentUser").(entities.User)
+	Products, err := u.ProductService.ServiceProductsSellerGet(userID.Id)
+	if err != nil {
+		fmt.Println(err)
+		response := helper.ResponsesFormat("Failed to fetch Product data", http.StatusOK, err)
+		return c.JSON(http.StatusOK, response)
+	}
+
+	return c.JSON(http.StatusOK, Products)
+}
+
 //Product get by id
 func (u *ProductHF) GetProductController(c echo.Context) error {
 	ProductId, errId := strconv.Atoi(c.Param("id"))

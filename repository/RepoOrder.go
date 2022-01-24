@@ -41,7 +41,7 @@ func (r *Repository_Order) GetOrders(id_user int) ([]helper.ResponseGetOrder, er
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println(results)
+
 	defer results.Close()
 
 	for results.Next() {
@@ -73,12 +73,12 @@ func (r *Repository_Order) GetOrdersByID(id_user int, id_transaction_detail int)
 		JOIN products p ON td.id_product = p.id
 		JOIN transaction_status ts ON ts.id = td.id_status
 		JOIN address a ON t.id = a.id_transaction
-		WHERE t.id_user = ? AND t.deleted_date IS NULL
-	`, id_user)
+		WHERE td.id = ? AND t.id_user = ? AND t.deleted_date IS NULL
+	`, id_transaction_detail, id_user)
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println(results)
+
 	defer results.Close()
 
 	for results.Next() {
