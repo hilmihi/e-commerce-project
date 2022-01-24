@@ -54,6 +54,19 @@ type ResponseUser struct {
 	Email string `json:"email"`
 }
 
+type ResponseCart struct {
+	entities.Cart
+	Product ResponseProduct2 `json:"product" form:"product"`
+}
+
+type ResponseProduct2 struct {
+	Id          int     `json:"id" form:"id"`
+	Name        string  `json:"name" form:"name"`
+	Description string  `json:"description" form:"description"`
+	Price       float64 `json:"price" form:"price"`
+	Quantity    int     `json:"quantity" form:"quantity"`
+}
+
 func FormatUser(user entities.User) UserFormatter {
 	formatter := UserFormatter{
 		ID:    user.Id,
