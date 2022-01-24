@@ -77,6 +77,19 @@ func (u *UserHF) GetUserController(c echo.Context) error {
 	return c.JSON(http.StatusOK, user)
 }
 
+//user get by id
+func (u *UserHF) GetMyUserController(c echo.Context) error {
+	userID := c.Get("currentUser").(entities.User)
+	user, err := u.userService.ServiceUserGet(userID.Id)
+	if err != nil {
+		fmt.Println(err)
+		errResp := helper.ResponsesFormat("Failed to get user by id", http.StatusBadRequest, nil)
+		return c.JSON(http.StatusBadRequest, errResp)
+	}
+
+	return c.JSON(http.StatusOK, user)
+}
+
 // user update
 func (u *UserHF) UpdateUserController(c echo.Context) error {
 	userId, errId := strconv.Atoi(c.Param("id"))
