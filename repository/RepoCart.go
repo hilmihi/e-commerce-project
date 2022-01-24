@@ -82,7 +82,7 @@ func (r *Repository_Cart) CreateCart(Cart entities.Cart) (entities.Cart, error) 
 func (r *Repository_Cart) UpdateCart(Id_Cart int, Cart entities.Cart) (entities.Cart, error) {
 	fmt.Println(Id_Cart)
 	fmt.Println(Cart)
-	query := `UPDATE cart_items SET quantity = ?, updated_date = now() WHERE id = ? AND id_product = ?`
+	query := `UPDATE cart_items SET quantity = ?, sub_total = ?, updated_date = now() WHERE id = ? AND id_product = ?`
 
 	statement, err := r.db.Prepare(query)
 	if err != nil {
@@ -91,7 +91,7 @@ func (r *Repository_Cart) UpdateCart(Id_Cart int, Cart entities.Cart) (entities.
 
 	defer statement.Close()
 
-	_, err = statement.Exec(Cart.Quantity, Id_Cart, Cart.Id_product)
+	_, err = statement.Exec(Cart.Quantity, Cart.Sub_total, Id_Cart, Cart.Id_product)
 	if err != nil {
 		return Cart, err
 	}
