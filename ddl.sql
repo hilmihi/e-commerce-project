@@ -128,6 +128,7 @@ DROP TABLE IF EXISTS `taktuku-project`.`transaction_detail`;
 CREATE TABLE `taktuku-project`.`transaction_detail` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `id_transaction` int(11) NOT NULL,
+  `id_status` int(11) NOT NULL,
   `id_product` int(11) NOT NULL,
   `quantity` int(11) NOT NULL,
   `sub_total` numeric NOT NULL,

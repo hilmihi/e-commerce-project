@@ -117,7 +117,7 @@ func (u *ProductHF) DeleteProductController(c echo.Context) error {
 
 	userID := c.Get("currentUser").(entities.User)
 
-	deleteProduct, err := u.ProductService.ServiceProductDelete(ProductId, userID.Id)
+	err := u.ProductService.ServiceProductDelete(ProductId, userID.Id)
 	// fmt.Printf("PI %d = UI %d", ProductId, userID.Id)
 	if err != nil {
 		fmt.Println("del", err)
@@ -125,6 +125,6 @@ func (u *ProductHF) DeleteProductController(c echo.Context) error {
 		return c.JSON(http.StatusUnauthorized, errResp)
 	}
 
-	resp := helper.ResponsesFormat("Successful Operation", http.StatusOK, deleteProduct)
+	resp := helper.ResponsesFormat("Successful Operation", http.StatusOK, nil)
 	return c.JSON(http.StatusOK, resp)
 }

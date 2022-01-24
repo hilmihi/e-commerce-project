@@ -6,6 +6,7 @@ import (
 	"sirclo/api/entities"
 	"sirclo/api/helper"
 	"sirclo/api/service"
+	"strconv"
 
 	"github.com/labstack/echo/v4"
 )
@@ -29,6 +30,25 @@ func (u *OrderHF) GetOrdersController(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, Orders)
+}
+
+//Order get detail
+func (u *OrderHF) GetOrderController(c echo.Context) error {
+	id_transaction_detail, errId := strconv.Atoi(c.Param("id"))
+	if errId != nil {
+		errResp := helper.ResponsesFormat("failed to convert id", http.StatusBadRequest, nil)
+		return c.JSON(http.StatusInternalServerError, errResp)
+
+	}
+	userID := c.Get("currentUser").(entities.User)
+	Orders, err := u.OrderService.ServiceOrdersGetByID(userID.Id, id_transaction_detail)
+	if err != nil {
+		fmt.Println(err)
+		response := helper.ResponsesFormat("Failed to fetch Product data", http.StatusOK, err)
+		return c.JSON(http.StatusOK, response)
+	}
+
+	return c.JSON(http.StatusOK, Orders[0])
 }
 
 //create order by Cart
