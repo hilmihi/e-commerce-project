@@ -11,7 +11,7 @@ CREATE TABLE `taktuku-project`.`users` (
   `birth_date` date NOT NULL,
   `phone_number` varchar(20) NOT NULL,
   `photo` varchar(255),
-  `gender_char` char(1) NOT NULL,
+  `gender` varchar(10) NOT NULL,
   `address` varchar(255) NOT NULL,
   `created_date` datetime DEFAULT NULL,
   `updated_date` datetime DEFAULT NULL,

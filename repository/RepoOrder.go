@@ -29,7 +29,8 @@ func (r *Repository_Order) GetOrders(id_user int) ([]helper.ResponseGetOrder, er
 
 	results, err := r.db.Query(`
 		SELECT td.id, t.date, td.quantity, td.sub_total, t.id_user, p.id as id_product,
-		p.name as product_name, p.price, p.description, p.photo
+		p.name as product_name, p.price, p.description, p.photo, ts.description as status,
+		p.id_user as id_seller, p.id_category, p.photo
 		FROM transaction t
 		JOIN transaction_detail td ON td.id_transaction = t.id
 		JOIN products p ON td.id_product = p.id
@@ -46,7 +47,8 @@ func (r *Repository_Order) GetOrders(id_user int) ([]helper.ResponseGetOrder, er
 		var Order helper.ResponseGetOrder
 
 		err = results.Scan(&Order.Id, &Order.Date, &Order.Quantity, &Order.Sub_total, &Order.Id_user, &Order.Product.Id,
-			&Order.Product.Name, &Order.Product.Price, &Order.Product.Description, &Order.Product.Photo)
+			&Order.Product.Name, &Order.Product.Price, &Order.Product.Description, &Order.Product.Photo,
+			&Order.Status, &Order.Product.Id_user, &Order.Product.Id_category, &Order.Product.Photo)
 		if err != nil {
 			return nil, err
 		}
