@@ -12,6 +12,7 @@ type ServiceOrder interface {
 	ServiceOrderCreateByCart(int, helper.RequestOrderCart) (entities.Transaction, error)
 	ServiceOrderCreateByProduct(int, helper.RequestOrderProduct) (entities.Transaction, error)
 	ServiceOrdersGet(int) ([]helper.ResponseGetOrder, error)
+	ServiceOrdersGetByID(int, int) ([]helper.ResponseGetOrderByID, error)
 }
 
 type serviceOrder struct {
@@ -29,6 +30,16 @@ func (s *serviceOrder) ServiceOrdersGet(id_user int) ([]helper.ResponseGetOrder,
 		return nil, err
 	}
 	fmt.Println(Orders)
+
+	return Orders, nil
+}
+
+func (s *serviceOrder) ServiceOrdersGetByID(id_user int, id_transaction_detail int) ([]helper.ResponseGetOrderByID, error) {
+	Orders, err := s.repository1.GetOrdersByID(id_user, id_transaction_detail)
+	if err != nil {
+		fmt.Println(err)
+		return nil, err
+	}
 
 	return Orders, nil
 }

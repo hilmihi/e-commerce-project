@@ -10,6 +10,7 @@ import (
 
 type RepositoryOrder interface {
 	GetOrders(int) ([]helper.ResponseGetOrder, error)
+	GetOrdersByID(int, int) ([]helper.ResponseGetOrderByID, error)
 	CreateOrder(int, entities.Address, entities.CreditCard, entities.Transaction, []entities.TransactionDetail) (entities.Transaction, error)
 	GetCartsIn([]int) ([]entities.Cart, error)
 	GetProduct(id int) (entities.Product, error)
@@ -49,6 +50,44 @@ func (r *Repository_Order) GetOrders(id_user int) ([]helper.ResponseGetOrder, er
 		err = results.Scan(&Order.Id, &Order.Date, &Order.Quantity, &Order.Sub_total, &Order.Id_user, &Order.Product.Id,
 			&Order.Product.Name, &Order.Product.Price, &Order.Product.Description, &Order.Product.Photo,
 			&Order.Status, &Order.Product.Id_user, &Order.Product.Id_category)
+
+		if err != nil {
+			return nil, err
+		}
+
+		Orders = append(Orders, Order)
+	}
+	return Orders, nil
+}
+
+//get Orders
+func (r *Repository_Order) GetOrdersByID(id_user int, id_transaction_detail int) ([]helper.ResponseGetOrderByID, error) {
+	var Orders []helper.ResponseGetOrderByID
+
+	results, err := r.db.Query(`
+		SELECT td.id, t.date, td.quantity, td.sub_total, t.id_user, p.id as id_product,
+		p.name as product_name, p.price, p.description, p.photo, ts.description as status,
+		p.id_user as id_seller, p.id_category, a.state, a.street, a.zip
+		FROM transaction t
+		JOIN transaction_detail td ON td.id_transaction = t.id
+		JOIN products p ON td.id_product = p.id
+		JOIN transaction_status ts ON ts.id = td.id_status
+		JOIN address a ON t.id = a.id_transaction
+		WHERE t.id_user = ? AND t.deleted_date IS NULL
+	`, id_user)
+	if err != nil {
+		return nil, err
+	}
+	fmt.Println(results)
+	defer results.Close()
+
+	for results.Next() {
+		var Order helper.ResponseGetOrderByID
+
+		err = results.Scan(&Order.Id, &Order.Date, &Order.Quantity, &Order.Sub_total, &Order.Id_user, &Order.Product.Id,
+			&Order.Product.Name, &Order.Product.Price, &Order.Product.Description, &Order.Product.Photo,
+			&Order.Status, &Order.Product.Id_user, &Order.Product.Id_category, &Order.Address.State,
+			&Order.Address.Street, &Order.Address.Zip)
 		if err != nil {
 			return nil, err
 		}
