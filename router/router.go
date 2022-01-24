@@ -63,6 +63,7 @@ func InitRoute(db *sql.DB) *echo.Echo {
 	e.POST("order/cart", addmiddleware.AuthMiddleware(authService, UserService, OrderController.CreateOrderCartController))
 	e.POST("order/product", addmiddleware.AuthMiddleware(authService, UserService, OrderController.CreateOrderProductController))
 	e.GET("order", addmiddleware.AuthMiddleware(authService, UserService, OrderController.GetOrdersController))
+	e.GET("order/:id", addmiddleware.AuthMiddleware(authService, UserService, OrderController.GetOrderController))
 
 	return e
 }

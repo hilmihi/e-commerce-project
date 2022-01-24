@@ -4,14 +4,15 @@ import (
 	"database/sql"
 	"fmt"
 	"sirclo/api/entities"
+	"sirclo/api/helper"
 )
 
 type RepositoryProduct interface {
 	GetProducts() ([]entities.Product, error)
 	CreateProduct(Product entities.Product) (entities.Product, error)
-	GetProduct(id int) (entities.Product, error)
+	GetProduct(id int) (helper.ResponseProduct, error)
 	UpdateProduct(Id_product int, Product entities.Product) (entities.Product, error)
-	DeleteProduct(Product entities.Product) (entities.Product, error)
+	DeleteProduct(int) error
 }
 
 type Repository_Product struct {
@@ -46,12 +47,19 @@ func (r *Repository_Product) GetProducts() ([]entities.Product, error) {
 }
 
 //get Product
-func (r *Repository_Product) GetProduct(id int) (entities.Product, error) {
-	var Product entities.Product
+func (r *Repository_Product) GetProduct(id int) (helper.ResponseProduct, error) {
+	var Product helper.ResponseProduct
 
-	row := r.db.QueryRow(`SELECT id, id_user, id_category, name, description, price, quantity, photo FROM products WHERE id = ? AND deleted_date IS NULL `, id)
+	row := r.db.QueryRow(`SELECT p.id, p.id_user, p.id_category, c.description as category, p.name, p.description, p.price, p.quantity, p.photo,
+								u.id as id_user, u.name, u.email
+							FROM products p
+							JOIN users u ON p.id_user = u.id
+							JOIN category_product c ON c.id = p.id_category
+							WHERE p.id = ? AND p.deleted_date IS NULL `, id)
 
-	err := row.Scan(&Product.Id, &Product.Id_user, &Product.Id_category, &Product.Name, &Product.Description, &Product.Price, &Product.Quantity, &Product.Photo)
+	err := row.Scan(&Product.Id, &Product.Id_user, &Product.Id_category, &Product.Category, &Product.Name, &Product.Description,
+		&Product.Price, &Product.Quantity, &Product.Photo, &Product.User.Id, &Product.User.Name, &Product.User.Email)
+
 	if err != nil {
 		return Product, err
 	}
@@ -100,20 +108,20 @@ func (r *Repository_Product) UpdateProduct(Id_product int, Product entities.Prod
 }
 
 //delete Product
-func (r *Repository_Product) DeleteProduct(Product entities.Product) (entities.Product, error) {
+func (r *Repository_Product) DeleteProduct(Id_product int) error {
 	query := `UPDATE products SET deleted_date = now() WHERE id = ?`
 
 	statement, err := r.db.Prepare(query)
 	if err != nil {
-		return Product, err
+		return err
 	}
 
 	defer statement.Close()
 
-	_, err = statement.Exec(Product.Id)
+	_, err = statement.Exec(Id_product)
 	if err != nil {
-		return Product, err
+		return err
 	}
 
-	return Product, nil
+	return nil
 }
