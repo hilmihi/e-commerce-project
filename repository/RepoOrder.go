@@ -41,7 +41,7 @@ func (r *Repository_Order) GetOrders(id_user int) ([]helper.ResponseGetOrder, er
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println(results)
+
 	defer results.Close()
 
 	for results.Next() {

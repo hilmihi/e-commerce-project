@@ -2,7 +2,6 @@ package repository
 
 import (
 	"database/sql"
-	"fmt"
 	"sirclo/api/entities"
 )
 
@@ -80,8 +79,6 @@ func (r *Repository_Cart) CreateCart(Cart entities.Cart) (entities.Cart, error) 
 
 //update Cart
 func (r *Repository_Cart) UpdateCart(Id_Cart int, Cart entities.Cart) (entities.Cart, error) {
-	fmt.Println(Id_Cart)
-	fmt.Println(Cart)
 	query := `UPDATE cart_items SET quantity = ?, sub_total = ?, updated_date = now() WHERE id = ? AND id_product = ?`
 
 	statement, err := r.db.Prepare(query)
