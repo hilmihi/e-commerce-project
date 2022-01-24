@@ -4,11 +4,12 @@ import (
 	"errors"
 	"fmt"
 	"sirclo/api/entities"
+	"sirclo/api/helper"
 	"sirclo/api/repository"
 )
 
 type ServiceCart interface {
-	ServiceCartsGet() ([]entities.Cart, error)
+	ServiceCartsGet(id_user int) ([]helper.ResponseCart, error)
 	ServiceCartGet(id int) (entities.Cart, error)
 	ServiceCartCreate(input entities.Cart) (entities.Cart, error)
 	ServiceCartUpdate(id int, input entities.Cart) (entities.Cart, error)
@@ -23,8 +24,8 @@ func NewCartService(repository1 repository.RepositoryCart) *serviceCart {
 	return &serviceCart{repository1}
 }
 
-func (su *serviceCart) ServiceCartsGet() ([]entities.Cart, error) {
-	Carts, err := su.repository1.GetCarts()
+func (su *serviceCart) ServiceCartsGet(id_user int) ([]helper.ResponseCart, error) {
+	Carts, err := su.repository1.GetCarts(id_user)
 	if err != nil {
 		return Carts, err
 	}

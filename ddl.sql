@@ -140,3 +140,16 @@ CREATE TABLE `taktuku-project`.`transaction_detail` (
   FOREIGN KEY (`id_transaction`) REFERENCES `transaction`(`id`),
   FOREIGN KEY (`id_product`) REFERENCES products(`id`)
 );
+
+
+-- function to update quantity on product table after checking out
+DELIMITER $$
+
+CREATE TRIGGER update_quantity_product
+AFTER INSERT
+ON transaction_detail FOR EACH ROW
+BEGIN
+UPDATE products set quantity = quantity - new.quantity  where id = new.id_product;
+END$$
+
+DELIMITER ;
