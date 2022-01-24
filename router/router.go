@@ -40,6 +40,7 @@ func InitRoute(db *sql.DB) *echo.Echo {
 
 	e.GET("products", ProductController.GetProductsController)
 	e.GET("products/:id", ProductController.GetProductController)
+	e.GET("products/myproduct", addmiddleware.AuthMiddleware(authService, UserService, ProductController.GetProductsSellerController))
 	e.POST("products", addmiddleware.AuthMiddleware(authService, UserService, ProductController.CreateProductController))
 	e.PUT("products/:id", addmiddleware.AuthMiddleware(authService, UserService, ProductController.UpdateProductController))
 	e.DELETE("products/:id", addmiddleware.AuthMiddleware(authService, UserService, ProductController.DeleteProductController))

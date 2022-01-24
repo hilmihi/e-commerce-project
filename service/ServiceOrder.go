@@ -29,7 +29,6 @@ func (s *serviceOrder) ServiceOrdersGet(id_user int) ([]helper.ResponseGetOrder,
 		fmt.Println(err)
 		return nil, err
 	}
-	fmt.Println(Orders)
 
 	return Orders, nil
 }

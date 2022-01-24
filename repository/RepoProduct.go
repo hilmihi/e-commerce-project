@@ -2,13 +2,13 @@ package repository
 
 import (
 	"database/sql"
-	"fmt"
 	"sirclo/api/entities"
 	"sirclo/api/helper"
 )
 
 type RepositoryProduct interface {
 	GetProducts() ([]entities.Product, error)
+	GetProductsSeller(int) ([]entities.Product, error)
 	CreateProduct(Product entities.Product) (entities.Product, error)
 	GetProduct(id int) (helper.ResponseProduct, error)
 	UpdateProduct(Id_product int, Product entities.Product) (entities.Product, error)
@@ -27,6 +27,29 @@ func NewRepositoryProduct(db *sql.DB) *Repository_Product {
 func (r *Repository_Product) GetProducts() ([]entities.Product, error) {
 	var Products []entities.Product
 	results, err := r.db.Query("select id, id_user, id_category, name, description, price, quantity, photo from products where deleted_date IS NULL")
+	if err != nil {
+		return nil, err
+	}
+
+	defer results.Close()
+
+	for results.Next() {
+		var Product entities.Product
+
+		err = results.Scan(&Product.Id, &Product.Id_user, &Product.Id_category, &Product.Name, &Product.Description, &Product.Price, &Product.Quantity, &Product.Photo)
+		if err != nil {
+			return nil, err
+		}
+
+		Products = append(Products, Product)
+	}
+	return Products, nil
+}
+
+func (r *Repository_Product) GetProductsSeller(id_user int) ([]entities.Product, error) {
+	var Products []entities.Product
+	results, err := r.db.Query(`select id, id_user, id_category, name, description, price, quantity, photo from products 
+					where id_user = ? AND deleted_date IS NULL`, id_user)
 	if err != nil {
 		return nil, err
 	}
@@ -88,8 +111,6 @@ func (r *Repository_Product) CreateProduct(Product entities.Product) (entities.P
 
 //update Product
 func (r *Repository_Product) UpdateProduct(Id_product int, Product entities.Product) (entities.Product, error) {
-	fmt.Println(Id_product)
-	fmt.Println(Product)
 	query := `UPDATE products SET name = ?, description = ?, price = ?, quantity = ?, photo = ?, updated_date = now() WHERE id = ? AND id_user = ?`
 
 	statement, err := r.db.Prepare(query)

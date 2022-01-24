@@ -11,6 +11,7 @@ import (
 type ServiceProduct interface {
 	ServiceProductsGet() ([]entities.Product, error)
 	ServiceProductGet(id int) (helper.ResponseProduct, error)
+	ServiceProductsSellerGet(int) ([]entities.Product, error)
 	ServiceProductCreate(input entities.Product) (entities.Product, error)
 	ServiceProductUpdate(id int, input entities.Product) (entities.Product, error)
 	ServiceProductDelete(id, userID int) error
@@ -26,6 +27,14 @@ func NewProductService(repository1 repository.RepositoryProduct) *serviceProduct
 
 func (su *serviceProduct) ServiceProductsGet() ([]entities.Product, error) {
 	Products, err := su.repository1.GetProducts()
+	if err != nil {
+		return Products, err
+	}
+	return Products, nil
+}
+
+func (su *serviceProduct) ServiceProductsSellerGet(id_user int) ([]entities.Product, error) {
+	Products, err := su.repository1.GetProductsSeller(id_user)
 	if err != nil {
 		return Products, err
 	}
