@@ -7,8 +7,8 @@ import (
 )
 
 type RepositoryProduct interface {
-	GetProducts() ([]entities.Product, error)
-	GetProductsSeller(int) ([]entities.Product, error)
+	GetProducts() ([]helper.ResponseProduct, error)
+	GetProductsSeller(int) ([]helper.ResponseProduct, error)
 	CreateProduct(Product entities.Product) (entities.Product, error)
 	GetProduct(id int) (helper.ResponseProduct, error)
 	UpdateProduct(Id_product int, Product entities.Product) (entities.Product, error)
@@ -24,9 +24,14 @@ func NewRepositoryProduct(db *sql.DB) *Repository_Product {
 }
 
 //get Products
-func (r *Repository_Product) GetProducts() ([]entities.Product, error) {
-	var Products []entities.Product
-	results, err := r.db.Query("select id, id_user, id_category, name, description, price, quantity, photo from products where deleted_date IS NULL")
+func (r *Repository_Product) GetProducts() ([]helper.ResponseProduct, error) {
+	var Products []helper.ResponseProduct
+	results, err := r.db.Query(`SELECT p.id, p.id_user, p.id_category, c.description as category, p.name, p.description, p.price, p.quantity, p.photo,
+									u.id as id_user, u.name, u.email
+								FROM products p
+								JOIN users u ON p.id_user = u.id
+								JOIN category_product c ON c.id = p.id_category
+								WHERE p.deleted_date IS NULL `)
 	if err != nil {
 		return nil, err
 	}
@@ -34,9 +39,10 @@ func (r *Repository_Product) GetProducts() ([]entities.Product, error) {
 	defer results.Close()
 
 	for results.Next() {
-		var Product entities.Product
+		var Product helper.ResponseProduct
 
-		err = results.Scan(&Product.Id, &Product.Id_user, &Product.Id_category, &Product.Name, &Product.Description, &Product.Price, &Product.Quantity, &Product.Photo)
+		err = results.Scan(&Product.Id, &Product.Id_user, &Product.Id_category, &Product.Category, &Product.Name, &Product.Description,
+			&Product.Price, &Product.Quantity, &Product.Photo, &Product.User.Id, &Product.User.Name, &Product.User.Email)
 		if err != nil {
 			return nil, err
 		}
@@ -46,10 +52,14 @@ func (r *Repository_Product) GetProducts() ([]entities.Product, error) {
 	return Products, nil
 }
 
-func (r *Repository_Product) GetProductsSeller(id_user int) ([]entities.Product, error) {
-	var Products []entities.Product
-	results, err := r.db.Query(`select id, id_user, id_category, name, description, price, quantity, photo from products 
-					where id_user = ? AND deleted_date IS NULL`, id_user)
+func (r *Repository_Product) GetProductsSeller(id_user int) ([]helper.ResponseProduct, error) {
+	var Products []helper.ResponseProduct
+	results, err := r.db.Query(`SELECT p.id, p.id_user, p.id_category, c.description as category, p.name, p.description, p.price, p.quantity, p.photo,
+									u.id as id_user, u.name, u.email
+								FROM products p
+								JOIN users u ON p.id_user = u.id
+								JOIN category_product c ON c.id = p.id_category
+								WHERE p.id_user = ? AND p.deleted_date IS NULL `, id_user)
 	if err != nil {
 		return nil, err
 	}
@@ -57,9 +67,10 @@ func (r *Repository_Product) GetProductsSeller(id_user int) ([]entities.Product,
 	defer results.Close()
 
 	for results.Next() {
-		var Product entities.Product
+		var Product helper.ResponseProduct
 
-		err = results.Scan(&Product.Id, &Product.Id_user, &Product.Id_category, &Product.Name, &Product.Description, &Product.Price, &Product.Quantity, &Product.Photo)
+		err = results.Scan(&Product.Id, &Product.Id_user, &Product.Id_category, &Product.Category, &Product.Name, &Product.Description,
+			&Product.Price, &Product.Quantity, &Product.Photo, &Product.User.Id, &Product.User.Name, &Product.User.Email)
 		if err != nil {
 			return nil, err
 		}
