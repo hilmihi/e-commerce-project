@@ -43,6 +43,16 @@ func (s *serviceOrder) ServiceOrdersGetByID(id_user int, id_transaction_detail i
 	return Orders, nil
 }
 
+func (s *serviceOrder) ServiceOrdersGetByID(id_user int, id_transaction_detail int) ([]helper.ResponseGetOrderByID, error) {
+	Orders, err := s.repository1.GetOrdersByID(id_user, id_transaction_detail)
+	if err != nil {
+		fmt.Println(err)
+		return nil, err
+	}
+
+	return Orders, nil
+}
+
 func (s *serviceOrder) ServiceOrderCreateByCart(id_user int, input helper.RequestOrderCart) (entities.Transaction, error) {
 	listCarts, err := s.repository1.GetCartsIn(input.Id_cart)
 	if err != nil {
