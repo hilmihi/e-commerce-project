@@ -65,7 +65,7 @@ func (r *Repository_User) GetUser(id int) (entities.User, error) {
 	var user entities.User
 
 	row := r.db.QueryRow(`SELECT id, name, email, birth_date, phone_number, photo, gender, address FROM users WHERE id = ? AND deleted_date IS NULL`, id)
-
+	fmt.Println(row)
 	err := row.Scan(&user.Id, &user.Name, &user.Email, &user.Birth_date, &user.Phone_number, &user.Photo, &user.Gender, &user.Address)
 	if err != nil {
 		return user, err

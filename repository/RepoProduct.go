@@ -122,7 +122,7 @@ func (r *Repository_Product) CreateProduct(Product entities.Product) (entities.P
 
 //update Product
 func (r *Repository_Product) UpdateProduct(Id_product int, Product entities.Product) (entities.Product, error) {
-	query := `UPDATE products SET name = ?, description = ?, price = ?, quantity = ?, photo = ?, updated_date = now() WHERE id = ? AND id_user = ?`
+	query := `UPDATE products SET name = ?, description = ?, price = ?, quantity = ?, photo = ?, id_category = ?, updated_date = now() WHERE id = ? AND id_user = ?`
 
 	statement, err := r.db.Prepare(query)
 	if err != nil {
@@ -131,7 +131,7 @@ func (r *Repository_Product) UpdateProduct(Id_product int, Product entities.Prod
 
 	defer statement.Close()
 
-	_, err = statement.Exec(Product.Name, Product.Description, Product.Price, Product.Quantity, Product.Photo, Id_product, Product.Id_user)
+	_, err = statement.Exec(Product.Name, Product.Description, Product.Price, Product.Quantity, Product.Photo, Product.Id_category, Id_product, Product.Id_user)
 	if err != nil {
 		return Product, err
 	}
