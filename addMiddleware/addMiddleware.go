@@ -41,7 +41,6 @@ func AuthMiddleware(authService JWTService, userService service.ServiceUser, nex
 		}
 
 		userID := int(claims["id"].(float64))
-
 		user, err := userService.ServiceUserGet(userID)
 		if err != nil {
 			fmt.Println("userID", err)
