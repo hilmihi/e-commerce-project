@@ -100,7 +100,7 @@ func (u *ProductHF) CreateProductController(c echo.Context) error {
 	var createInput entities.Product
 	if err := c.Bind(&createInput); err != nil {
 		fmt.Println("CI", err)
-		errResp := helper.ResponsesFormat("Failed to Create Product", http.StatusBadRequest, nil)
+		errResp := helper.ResponsesFormat("Failed to Binding Data", http.StatusBadRequest, nil)
 		return c.JSON(http.StatusBadRequest, errResp)
 	}
 
