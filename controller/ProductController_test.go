@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	addmiddleware "sirclo/api/addMiddleware"
 	"sirclo/api/config"
 	"sirclo/api/controller"
@@ -23,11 +24,11 @@ import (
 type mockProductRepository struct{}
 
 func initDatabase() (*sql.DB, error) {
-	_, err := config.InitDBTest("taktuku_project_test", "root:@tcp(localhost:3306)/?parseTime=True&&multiStatements=true")
+	_, err := config.InitDBTest("taktuku_project_test", os.Getenv("DB_CONNECTION_STRING_TEST_INIT"))
 	if err != nil {
 		panic(err)
 	}
-	db, err := config.InitDB("root:@tcp(localhost:3306)/taktuku_project_test?parseTime=True&&multiStatements=true")
+	db, err := config.InitDB(os.Getenv("DB_CONNECTION_STRING_TEST"))
 	return db, err
 }
 
