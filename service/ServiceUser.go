@@ -12,7 +12,7 @@ type ServiceUser interface {
 	ServiceUsersGet() ([]entities.User, error)
 	ServiceUserGet(id int) (entities.User, error)
 	ServiceUserCreate(input entities.User) (entities.User, error)
-	ServiceUserUpdate(id int, input helper.RequestUserUpdate) (entities.User, error)
+	ServiceUserUpdate(id int, input entities.User) (entities.User, error)
 	ServiceUserDelete(id int) (entities.User, error)
 }
 
@@ -80,21 +80,15 @@ func (s *serviceUser) ServiceUserCreate(input entities.User) (entities.User, err
 	return createUser, nil
 }
 
-func (s *serviceUser) ServiceUserUpdate(id int, input helper.RequestUserUpdate) (entities.User, error) {
+func (s *serviceUser) ServiceUserUpdate(id int, input entities.User) (entities.User, error) {
 	user, err := s.repository1.GetUser(id)
 	if err != nil {
 		return user, err
 	}
 
-	user.Name = input.Name
-	user.Email = input.Email
-	user.Password = input.Password
-	// if err != nil {
-	// 	return user, err
-	// }
-	// user.UpdatedAt = time.Now()
+	input.Id = id
 
-	updateUser, err := s.repository1.UpdateUser(user)
+	updateUser, err := s.repository1.UpdateUser(input)
 	if err != nil {
 		return updateUser, err
 	}

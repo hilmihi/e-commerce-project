@@ -21,7 +21,8 @@ func NewCartController(CartService service.ServiceCart) *CartHF {
 
 //Cart get all
 func (u *CartHF) GetCartsController(c echo.Context) error {
-	Carts, err := u.CartService.ServiceCartsGet()
+	id_user := c.Get("currentUser").(entities.User)
+	Carts, err := u.CartService.ServiceCartsGet(id_user.Id)
 	if err != nil {
 		fmt.Println(err)
 		response := helper.ResponsesFormat("Failed to fetch Cart data", http.StatusOK, err)

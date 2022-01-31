@@ -4,15 +4,17 @@ import (
 	"errors"
 	"fmt"
 	"sirclo/api/entities"
+	"sirclo/api/helper"
 	"sirclo/api/repository"
 )
 
 type ServiceProduct interface {
-	ServiceProductsGet() ([]entities.Product, error)
-	ServiceProductGet(id int) (entities.Product, error)
+	ServiceProductsGet() ([]helper.ResponseProduct, error)
+	ServiceProductGet(id int) (helper.ResponseProduct, error)
+	ServiceProductsSellerGet(int) ([]helper.ResponseProduct, error)
 	ServiceProductCreate(input entities.Product) (entities.Product, error)
 	ServiceProductUpdate(id int, input entities.Product) (entities.Product, error)
-	ServiceProductDelete(id, userID int) (entities.Product, error)
+	ServiceProductDelete(id, userID int) error
 }
 
 type serviceProduct struct {
@@ -23,7 +25,7 @@ func NewProductService(repository1 repository.RepositoryProduct) *serviceProduct
 	return &serviceProduct{repository1}
 }
 
-func (su *serviceProduct) ServiceProductsGet() ([]entities.Product, error) {
+func (su *serviceProduct) ServiceProductsGet() ([]helper.ResponseProduct, error) {
 	Products, err := su.repository1.GetProducts()
 	if err != nil {
 		return Products, err
@@ -31,7 +33,15 @@ func (su *serviceProduct) ServiceProductsGet() ([]entities.Product, error) {
 	return Products, nil
 }
 
-func (s *serviceProduct) ServiceProductGet(id int) (entities.Product, error) {
+func (su *serviceProduct) ServiceProductsSellerGet(id_user int) ([]helper.ResponseProduct, error) {
+	Products, err := su.repository1.GetProductsSeller(id_user)
+	if err != nil {
+		return Products, err
+	}
+	return Products, nil
+}
+
+func (s *serviceProduct) ServiceProductGet(id int) (helper.ResponseProduct, error) {
 	Product, err := s.repository1.GetProduct(id)
 	if err != nil {
 		return Product, err
@@ -55,21 +65,21 @@ func (s *serviceProduct) ServiceProductUpdate(id int, input entities.Product) (e
 	return updateProduct, nil
 }
 
-func (s *serviceProduct) ServiceProductDelete(id, userID int) (entities.Product, error) {
+func (s *serviceProduct) ServiceProductDelete(id, userID int) error {
 	ProductID, err := s.ServiceProductGet(id)
 	if err != nil {
-		return ProductID, err
+		return err
 	}
 
 	if userID != ProductID.Id_user {
 		fmt.Printf("uid: %d & puid: %d", userID, ProductID.Id_user)
-		return ProductID, errors.New("unauthorized")
+		return errors.New("unauthorized")
 	}
 
-	deleteProduct, err := s.repository1.DeleteProduct(ProductID)
+	err = s.repository1.DeleteProduct(id)
 	if err != nil {
-		return deleteProduct, err
+		return err
 	} else {
-		return deleteProduct, nil
+		return nil
 	}
 }

@@ -37,3 +37,16 @@ type RequestProductUpdate struct {
 	Description string        `json:"description" form:"description"`
 	Price       float64       `json:"price" form:"price"`
 }
+
+type RequestOrderCart struct {
+	Id_cart    []int               `json:"id_cart" form:"id_cart"`
+	Address    entities.Address    `json:"address" form:"address"`
+	CreditCard entities.CreditCard `json:"credit_cart" form:"credit_cart"`
+}
+
+type RequestOrderProduct struct {
+	Id_product int                 `json:"id_product" form:"id_product"`
+	Quantity   int                 `json:"quantity" form:"quantity"`
+	Address    entities.Address    `json:"address" form:"address"`
+	CreditCard entities.CreditCard `json:"credit_cart" form:"credit_cart"`
+}

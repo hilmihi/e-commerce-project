@@ -29,6 +29,7 @@ func InitRoute(db *sql.DB) *echo.Echo {
 	e.POST("/login", UserController.AuthUserController)
 	e.GET("/users", addmiddleware.AuthMiddleware(authService, UserService, UserController.GetUsersController))
 	e.GET("/users/:id", addmiddleware.AuthMiddleware(authService, UserService, UserController.GetUserController))
+	e.GET("/users/myprofile", addmiddleware.AuthMiddleware(authService, UserService, UserController.GetMyUserController))
 	e.POST("/users", UserController.CreateUserController)
 	e.PUT("/users/:id", addmiddleware.AuthMiddleware(authService, UserService, UserController.UpdateUserController))
 	e.DELETE("/users/:id", addmiddleware.AuthMiddleware(authService, UserService, UserController.DeleteUserController))
@@ -40,6 +41,7 @@ func InitRoute(db *sql.DB) *echo.Echo {
 
 	e.GET("products", ProductController.GetProductsController)
 	e.GET("products/:id", ProductController.GetProductController)
+	e.GET("products/myproduct", addmiddleware.AuthMiddleware(authService, UserService, ProductController.GetProductsSellerController))
 	e.POST("products", addmiddleware.AuthMiddleware(authService, UserService, ProductController.CreateProductController))
 	e.PUT("products/:id", addmiddleware.AuthMiddleware(authService, UserService, ProductController.UpdateProductController))
 	e.DELETE("products/:id", addmiddleware.AuthMiddleware(authService, UserService, ProductController.DeleteProductController))
@@ -54,6 +56,16 @@ func InitRoute(db *sql.DB) *echo.Echo {
 	e.POST("carts", addmiddleware.AuthMiddleware(authService, UserService, CartController.CreateCartController))
 	e.PUT("carts/:id", addmiddleware.AuthMiddleware(authService, UserService, CartController.UpdateCartController))
 	e.DELETE("carts/:id", addmiddleware.AuthMiddleware(authService, UserService, CartController.DeleteCartController))
+
+	//Order
+	OrderRepository := repository.NewRepositoryOrder(db)
+	OrderService := service.NewOrderService(OrderRepository)
+	OrderController := controller.NewOrderController(OrderService)
+
+	e.POST("order/cart", addmiddleware.AuthMiddleware(authService, UserService, OrderController.CreateOrderCartController))
+	e.POST("order/product", addmiddleware.AuthMiddleware(authService, UserService, OrderController.CreateOrderProductController))
+	e.GET("order", addmiddleware.AuthMiddleware(authService, UserService, OrderController.GetOrdersController))
+	e.GET("order/:id", addmiddleware.AuthMiddleware(authService, UserService, OrderController.GetOrderController))
 
 	return e
 }

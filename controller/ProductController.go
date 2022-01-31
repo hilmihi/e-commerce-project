@@ -31,6 +31,18 @@ func (u *ProductHF) GetProductsController(c echo.Context) error {
 	return c.JSON(http.StatusOK, Products)
 }
 
+func (u *ProductHF) GetProductsSellerController(c echo.Context) error {
+	userID := c.Get("currentUser").(entities.User)
+	Products, err := u.ProductService.ServiceProductsSellerGet(userID.Id)
+	if err != nil {
+		fmt.Println(err)
+		response := helper.ResponsesFormat("Failed to fetch Product data", http.StatusOK, err)
+		return c.JSON(http.StatusOK, response)
+	}
+
+	return c.JSON(http.StatusOK, Products)
+}
+
 //Product get by id
 func (u *ProductHF) GetProductController(c echo.Context) error {
 	ProductId, errId := strconv.Atoi(c.Param("id"))
@@ -61,7 +73,7 @@ func (u *ProductHF) UpdateProductController(c echo.Context) error {
 	var updateInput entities.Product
 	if err := c.Bind(&updateInput); err != nil {
 		fmt.Println("bind", err)
-		errResp := helper.ResponsesFormat("Failed to update data", http.StatusBadRequest, nil)
+		errResp := helper.ResponsesFormat("Failed to bind data", http.StatusBadRequest, nil)
 		return c.JSON(http.StatusBadRequest, errResp)
 
 	}
@@ -72,8 +84,8 @@ func (u *ProductHF) UpdateProductController(c echo.Context) error {
 	update, err := u.ProductService.ServiceProductUpdate(ProductId, updateInput)
 	if err != nil {
 		fmt.Println("update", err)
-		errResp := helper.ResponsesFormat("unauthorized", http.StatusUnauthorized, nil)
-		return c.JSON(http.StatusUnauthorized, errResp)
+		errResp := helper.ResponsesFormat("Failed to update data", http.StatusUnauthorized, nil)
+		return c.JSON(http.StatusBadRequest, errResp)
 
 	}
 
@@ -88,7 +100,7 @@ func (u *ProductHF) CreateProductController(c echo.Context) error {
 	var createInput entities.Product
 	if err := c.Bind(&createInput); err != nil {
 		fmt.Println("CI", err)
-		errResp := helper.ResponsesFormat("Failed to Create Product", http.StatusBadRequest, nil)
+		errResp := helper.ResponsesFormat("Failed to Binding Data", http.StatusBadRequest, nil)
 		return c.JSON(http.StatusBadRequest, errResp)
 	}
 
@@ -111,20 +123,20 @@ func (u *ProductHF) DeleteProductController(c echo.Context) error {
 	ProductId, errId := strconv.Atoi(c.Param("id"))
 	if errId != nil {
 		// fmt.Println("id", errId)
-		errResp := helper.ResponsesFormat("Failed to delete Product", http.StatusInternalServerError, nil)
+		errResp := helper.ResponsesFormat("failed to convert id", http.StatusBadRequest, nil)
 		return c.JSON(http.StatusBadRequest, errResp)
 	}
 
 	userID := c.Get("currentUser").(entities.User)
 
-	deleteProduct, err := u.ProductService.ServiceProductDelete(ProductId, userID.Id)
+	err := u.ProductService.ServiceProductDelete(ProductId, userID.Id)
 	// fmt.Printf("PI %d = UI %d", ProductId, userID.Id)
 	if err != nil {
 		fmt.Println("del", err)
-		errResp := helper.ResponsesFormat("unauthorized", http.StatusUnauthorized, nil)
-		return c.JSON(http.StatusUnauthorized, errResp)
+		errResp := helper.ResponsesFormat("Failed to delete Product", http.StatusInternalServerError, nil)
+		return c.JSON(http.StatusInternalServerError, errResp)
 	}
 
-	resp := helper.ResponsesFormat("Successful Operation", http.StatusOK, deleteProduct)
+	resp := helper.ResponsesFormat("Successful Operation", http.StatusOK, nil)
 	return c.JSON(http.StatusOK, resp)
 }
