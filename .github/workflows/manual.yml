@@ -23,7 +23,7 @@ jobs:
         key: ${{ secrets.KEY }}
         port: ${{ secrets.PORT }}
         script: |
-          cd app
+          cd e-commerce-project
           git pull origin main
           go test -v ./..
           docker-compose down && docker-compose up --build -d
