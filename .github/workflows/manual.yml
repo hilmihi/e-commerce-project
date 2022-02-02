@@ -8,6 +8,10 @@ on:
   push:
     branches:
       - main
+  pull_request:
+    branches: 
+      - main
+    types: [closed]
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -24,6 +28,7 @@ jobs:
         port: ${{ secrets.PORT }}
         script: |
           cd e-commerce-project
+          docker run -p 3307:3306 -e MYSQL_ROOT_PASSWORD=toor -e MYSQL_DATABASE=taktuku_project_test --name appDbTest -d mysql
           git pull origin main
           go test -v ./..
           docker-compose down && docker-compose up --build -d

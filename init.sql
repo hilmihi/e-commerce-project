@@ -132,7 +132,6 @@ CREATE TABLE `taktuku-project`.`transaction_detail` (
   `id_product` int(11) NOT NULL,
   `quantity` int(11) NOT NULL,
   `sub_total` numeric NOT NULL,
-  `id_status` int(1) NOT NULL,
   `created_date` datetime DEFAULT NULL,
   `updated_date` datetime DEFAULT NULL,
   `deleted_date` datetime DEFAULT NULL,

@@ -1,30 +1,28 @@
+version: '3'
 services:
 
-  appDb:
-    image: mysql
+  appdb:
+    build:
+      context: .
+      dockerfile: ./Dockerfile.mysql
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: toor
-      MYSQL_DATABASE: alta
+      MYSQL_DATABASE: taktuku-project
     ports: 
       - 3306:3306
-    volumes:
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     healthcheck:
       test: ["CMD", "mysql", "-u", "root",  "-ptoor", "-e", "show schemas"]
-      interval: 10s 
+      retries: 20
+      interval: 10s
 
   app:
     build: .
     restart: always
     depends_on:
-      appDb:
+      appdb:
         condition: service_healthy
     environment:
-      HTTP_PORT: 8080
       DB_CONNECTION_STRING: root:toor@tcp(appDb:3306)/taktuku-project?charset=utf8&parseTime=True&loc=Local
-      DB_CONNECTION_STRING_TEST_INIT: root:toor@tcp(appDb:3306)/?charset=utf8&parseTime=True&loc=Local
-      DB_CONNECTION_STRING_TEST: root:toor@tcp(appDb:3306)/taktuku_project_test?charset=utf8&parseTime=True&loc=Local
-      STORAGE: db
     ports:
       - 8080:8080
